@@ -1,5 +1,5 @@
-version: '3.8'
 
+version: '3.8'
 services:
   espocrm:
     image: espocrm/espocrm:latest
@@ -27,7 +27,7 @@ services:
     image: mariadb:10.6
     platform: linux/arm64
     container_name: espocrm-db
-    restart: always
+    restart: always 
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=espocrm
@@ -46,6 +46,17 @@ services:
     environment:
       - PMA_HOST=db
       - MYSQL_ROOT_PASSWORD=root
+
+  cron:
+    image: espocrm/espocrm:latest
+    platform: linux/arm64
+    container_name: espocrm-cron
+    restart: always
+    entrypoint: sh -c "while true; do php -f /var/www/html/cron.php; sleep 60; done"
+    volumes:
+      - ./data:/var/www/html/data
+      - ./custom:/var/www/html/custom
+      - ./extensions:/var/www/html/extensions
 
 volumes:
   db_data:
