@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  espocrm:
+    image: espocrm/espocrm:latest
+    platform: linux/arm64
+    container_name: espocrm
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_DRIVER=pdo_mysql
+      - DATABASE_HOST=db
+      - DATABASE_NAME=espocrm
+      - DATABASE_USER=espocrm
+      - DATABASE_PASSWORD=espocrm
+    volumes:
+      - ./data:/var/www/html/data
+      - ./custom:/var/www/html/custom
+      - ./extensions:/var/www/html/extensions
+      - ./client/custom:/var/www/html/client/custom
+      - ./log:/var/www/html/log
+
+  db:
+    image: mariadb:10.6
+    platform: linux/arm64
+    container_name: espocrm-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=espocrm
+      - MYSQL_USER=espocrm
+      - MYSQL_PASSWORD=espocrm
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: linuxserver/phpmyadmin
+    platform: linux/arm64
+    container_name: espocrm-phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=db
+      - MYSQL_ROOT_PASSWORD=root
+
+volumes:
+  db_data:
